@@ -19,7 +19,7 @@ RUN apt-get update
 RUN apt-get install -y curl git unzip wget tzdata
 RUN curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
 RUN apt-get install -y nodejs
-RUN npm i -g yarn
+RUN npm i -g yarn discord.js@^11.6.4 puppeteer@^8.0.0
 
 RUN apt install -y tigervnc-standalone-server fluxbox nginx xterm git net-tools python python-numpy scrot wget software-properties-common vlc avahi-daemon unzip
 
@@ -43,9 +43,6 @@ RUN mkdir -p /opt/startup_scripts
 RUN wget -q -O /opt/startup_scripts/startup.sh https://raw.githubusercontent.com/injnius/discord-videostreamer/main/startup.sh
 # Update apt for the new obs repository
 RUN apt-get update \
-	&& mkdir -p /config/obs-studio /root/.config/ \
-	&& ln -s /config/obs-studio/ /root/.config/obs-studio \
-	&& apt install -y ffmpeg obs-studio \
 	&& apt-get clean -y \
 	&& chmod +x /opt/*.sh \
 	&& chmod +x /opt/startup_scripts/*.sh 
