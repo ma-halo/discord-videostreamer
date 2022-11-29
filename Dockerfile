@@ -27,12 +27,12 @@ RUN git clone --branch v1.3.0 --single-branch https://github.com/novnc/noVNC.git
 	&& git clone --branch v0.10.0 --single-branch https://github.com/novnc/websockify.git /opt/noVNC/utils/websockify \
 	&& ln -s /opt/noVNC/vnc.html /opt/noVNC/index.html
 
-# Install chrome 88
-RUN wget http://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_88.0.4324.96-1_amd64.deb
-RUN apt-get install -y ./google-chrome-stable_88.0.4324.96-1_amd64.deb
+# Install chrome
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN apt-get install -y ./google-chrome-stable_current_amd64.deb
 
-# Install chromedriver 88
-RUN wget https://chromedriver.storage.googleapis.com/88.0.4324.27/chromedriver_linux64.zip
+# Install chromedriver
+RUN wget https://chromedriver.storage.googleapis.com/108.0.5359.22/chromedriver_linux64.zip
 RUN unzip chromedriver_linux64.zip
 RUN mv chromedriver /bin
 
