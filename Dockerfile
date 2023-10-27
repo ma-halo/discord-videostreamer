@@ -14,23 +14,30 @@ RUN mkdir -p /opt/startup_scripts
 RUN mkdir -p /config_data
 WORKDIR /config_data
 
-# Install dependencies
+# Install basic dependencies
 RUN apt-get update
-RUN apt install -y curl git unzip wget tzdata tigervnc-standalone-server fluxbox nginx xterm net-tools scrot software-properties-common vlc avahi-daemon firefox firefoxdriver gstreamer1.0-plugins-base gstreamer1.0-plugins-good ffmpeg v4l2loopback-dkms v4l2loopback-utils linux-image-extra-virtual-hwe-20.04 alsa alsa-utils
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt-get install -y nodejs
-RUN npm i -g yarn discord.js@^11.6.4 puppeteer@^8.0.0
+RUN apt install -y curl git unzip wget tzdata
 
-# Setup VNC Server
-RUN git clone --branch v1.3.0 --single-branch https://github.com/novnc/noVNC.git /opt/noVNC \
-	&& git clone --branch v0.10.0 --single-branch https://github.com/novnc/websockify.git /opt/noVNC/utils/websockify \
-	&& ln -s /opt/noVNC/vnc.html /opt/noVNC/index.html
-
-# Copy various files to their respective places
-RUN wget -q -O /opt/container_startup.sh https://raw.githubusercontent.com/injnius/discord-videostreamer/main/container_startup.sh
-RUN wget -q -O /opt/x11vnc_entrypoint.sh https://raw.githubusercontent.com/injnius/discord-videostreamer/main/x11vnc_entrypoint.sh
+COPY container_startup.sh /opt/
+COPY x11vnc_entrypoint.sh /opt/
 RUN mkdir -p /opt/startup_scripts
-RUN wget -q -O /opt/startup_scripts/startup.sh https://raw.githubusercontent.com/injnius/discord-videostreamer/main/startup.sh
+COPY startup.sh /opt/startup_scripts/
+
+
+## Install Chrome
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN apt install -y ./google-chrome-stable_current_amd64.deb
+
+## Install required libraries for RobotJS
+RUN apt-get install -y xvfb libxtst-dev libpng++-dev python-pip make build-essential manpages-dev
+
+## Node
+RUN npm install -g node-gyp
+RUN node-gyp rebuild
+
+## Puppeteer libraries
+RUN apt install -y gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
 
 # finalise
 RUN apt-get update \
