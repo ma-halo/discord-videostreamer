@@ -2,13 +2,6 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TZ=Etc/UTC
 
-# for the VNC connection
-EXPOSE 5900
-# for the browser VNC client
-EXPOSE 5901
-# Use environment variables
-ENV VNC_PASSWD=123456
-
 # Set working directory
 RUN mkdir -p /opt/startup_scripts
 RUN mkdir -p /config_data
@@ -19,10 +12,12 @@ RUN apt-get update
 RUN apt install -y curl git unzip wget tzdata
 
 COPY container_startup.sh /opt/
-COPY x11vnc_entrypoint.sh /opt/
 RUN mkdir -p /opt/startup_scripts
 COPY startup.sh /opt/startup_scripts/
 
+COPY config.json /config_data/
+COPY package.json /config_data/
+COPY index.js /config_data/
 
 ## Install Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add
@@ -46,6 +41,6 @@ RUN apt-get update \
 	&& chmod +x /opt/startup_scripts/*.sh 
 	 
 # Add menu entries to the container
-VOLUME ["/config"]
+VOLUME ["/config_data"]
 
 ENTRYPOINT ["/opt/container_startup.sh"]
